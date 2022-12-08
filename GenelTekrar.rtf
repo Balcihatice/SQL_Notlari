@@ -1,0 +1,156 @@
+{\rtf1\ansi\ansicpg1254\cocoartf2706
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww29200\viewh18400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li767\fi344\pardirnatural\qj\partightenfactor0
+
+\f0\fs24 \cf0 \
+-- Eger tablolarimizda parent-child iliskisi varsa(primary-foreign key) ve child tablomuzda on delete cascade kullanmissak;\
+--delete from parent2 dersek parent'taki veriler silinir dolayisiyla iliskili oldugu icin child'daki veriler de silinir.\
+--drop table parent2 dersek on delete kullansak da kullanmasak da parent tablomuz silinmez, cunku tablolar arasinda parent-child iliskisi var. \
+--parenti silmenin tek yolu sonuna cascade yazmaktir. Ya da once child tabloyu, sonra parent tabloyu silmemiz lazim.\
+\
+\
+--Eger tablolarimizda parent-child iliskisi varsa(primary-foreign key) ve child tablomuzda on delete cascade KULLANMAMISSAK;\
+--delete from parent3 dersek parent'taki verilerimiz silinmez. Cunku tablolarimiz arasinda parent-child iliskisi var. Eger on delete cascade kullanmis olsaydik\
+--parent'taki verileri silebilirdik.\
+\
+\
+\
+\
+\
+create table personel\
+(\
+id int,\
+isim varchar,\
+soyisim varchar,\
+email varchar,\
+ise_baslama_tarihi date,\
+is_unvani varchar,\
+maas int\
+);\
+\
+INSERT INTO personel VAlues (123456789, 'Ali','Can','alican@gmail.com','10-04-10','isci',5000);\
+INSERT INTO personel VAlues (123456788, 'Veli','Cem','velicem@gmail.com','10-01-12','isci',5500);\
+INSERT INTO personel VAlues (123456787, 'Ayse','Gul','aysegul@gmail.com','01-05-14','muhasebeci',4500);\
+INSERT INTO personel VAlues (123456789, 'Fatma','Yasa','fatmayasa@gmail.com','10-04-09','muhendis',7500);\
+\
+select * from personel\
+\
+--b) Tablodan maasi 5000\'92den az veya unvani isci olanlarin isimlerini listeleyin\
+\
+select isim from personel where maas<5000 or is_unvani='isci';\
+\
+--c) Iscilerin tum bilgilerini listeleyin\
+\
+select * from personel where is_unvani='isci';\
+\
+--d) Soyadi Can,Cem veya Gul olanlarin unvanlarini ve maaslarini listeleyin\
+\
+select is_unvani, maas,soyisim from personel where soyisim in ('Can','Cem','Gul');\
+\
+--e) Maasi 5000\'92den cok olanlarin emailve is baslama tarihlerini listeleyin\
+\
+select email,ise_baslama_tarihi from personel where maas>5000;\
+\
+--f) Maasi 5000\'92den cok veya 7000\'92den az olanlarin tum bilgilerini listeleyin\
+\
+select * from personel where maas between 5001 and 6999;\
+--  ORDER BY\
+CREATE TABLE INSANLAR\
+(\
+ssn char(9),\
+isim varchar(50),\
+soyisim varchar(50), \
+adres varchar(50)\
+\
+);\
+INSERT INTO insanlar VALUES(123456789, 'Ali','Can', 'Istanbul');\
+INSERT INTO insanlar VALUES(234567890, 'Veli','Cem', 'Ankara');\
+INSERT INTO insanlar VALUES(345678901, 'Mine','Bulut', 'Ankara');\
+INSERT INTO insanlar VALUES(256789012, 'Mahmut','Bulut', 'Istanbul');\
+INSERT INTO insanlar VALUES (344678901, 'Mine','Yasa', 'Ankara');\
+INSERT INTO insanlar VALUES (345678901, 'Veli','Yilmaz', 'Istanbul');\
+--Insanlar tablosundaki datalari adres\'92e gore siralayin\
+SELECT * FROM insanlar ORDER BY adres;\
+\
+--Insanlar tablosundaki ismi Mine olanlari SSN sirali olarak listeleyin\
+select * from insanlar where isim='Mine' order by ssn;\
+\
+--Insanlar tablosundaki soyismi Bulut olanlari isim sirali olarak listeleyin\
+select * from insanlar where soyisim='Bulut' order by 2;\
+\
+--Insanlar tablosundaki tum kayitlari SSN numarasi buyukten kucuge olarak siralayin\
+\
+select * from insanlar order by ssn desc;\
+\
+Insanlar tablosundaki tum kayitlari isimler Natural sirali, Soyisimler ters sirali olarak listeleyin\
+select * from insanlar order by isim asc,soyisim desc;\
+\
+\uc0\u304 sim ve soyisim de\u287 erlerini soyisim kelime uzunluklar\u305 na g\'f6re s\u305 ralay\u305 n\u305 z\
+select isim,soyisim from insanlar order by length( soyisim);\
+\
+--T\'fcm isim ve soyisim de\uc0\u287 erlerini ayn\u305  sutunda \'e7a\u287 \u305 rarak her bir s\'fctun de\u287 erini uzunlu\u287 una g\'f6re s\u305 ralay\u305 n\u305 z\
+select concat (isim, ' ',soyisim) as isim_soyisim from insanlar order by length (isim||''||soyisim);\
+select isim ||' '||soyisim as isim_soyisim from insanlar order by length (isim)+length (soyisim);\
+\
+--GROUP BY CLAUSE\
+CREATE TABLE manav\
+(\
+isim varchar(50),\
+Urun_adi varchar(50),\
+Urun_miktar int\
+);\
+\
+INSERT INTO manav VALUES( 'Ali', 'Elma', 5);\
+INSERT INTO manav VALUES( 'Ayse', 'Armut', 3);\
+INSERT INTO manav VALUES( 'Veli', 'Elma', 2);\
+INSERT INTO manav VALUES( 'Hasan', 'Uzum', 4);\
+INSERT INTO manav VALUES( 'Ali', 'Armut', 2);\
+INSERT INTO manav VALUES( 'Ayse', 'Elma', 3);\
+INSERT INTO manav VALUES( 'Veli', 'Uzum', 5);\
+INSERT INTO manav VALUES( 'Ali', 'Armut', 2);\
+INSERT INTO manav VALUES( 'Veli', 'Elma', 3);\
+INSERT INTO manav VALUES( 'Ayse', 'Uzum', 2);\
+select * from manav\
+Isme gore alinan toplam urunleri bulun\
+select isim, sum(urun_miktar) as toplam_miktar from manav group by isim;\
+\
+Urun ismine gore urunu alan toplam kisi sayisi\
+select urun_adi,count(isim) from manav group by urun_adi;\
+\
+Alinan kilo miktarina gore musteri sayisi\
+select urun_miktar as alinan_kilo_miktari, count(isim) as musteri_sayisi from manav group by urun_miktar;\
+\
+\
+\
+CREATE TABLE personel \
+(\
+id int,\
+isim varchar(50),\
+sehir varchar(50), maas int,\
+sirket varchar(20)\
+);\
+INSERT INTO personel VALUES(123456789, 'Ali Yilmaz', 'Istanbul', 5500, 'Honda');\
+INSERT INTO personel VALUES(234567890, 'Veli Sahin', 'Istanbul', 4500, 'Toyota');\
+INSERT INTO personel VALUES(345678901, 'Mehmet Ozturk', 'Ankara', 3500, 'Honda');\
+INSERT INTO personel VALUES(456789012, 'Mehmet Ozturk', 'Izmir', 6000, 'Ford');\
+INSERT INTO personel VALUES(567890123, 'Mehmet Ozturk', 'Ankara', 7000, 'Tofas');\
+INSERT INTO personel VALUES(456789012, 'Veli Sahin', 'Ankara', 4500, 'Ford');\
+INSERT INTO personel VALUES(123456710, 'Hatice Sahin', 'Bursa', 4500, 'Honda');\
+\
+select * from personel\
+\
+\
+--sehre gore toplam personel sayisini bulun\
+select sehir,count(isim) from personel group by sehir;\
+\
+--Sirketlere gore maasi 5000 liradan fazla olan personel sayisini bulun\
+select sirket, count(isim) from personel where maas>5000 order by sirket;\
+\
+--her sirket icin Min ve Max maasi bulun\
+select sirket, min(maas),max(maas) from personel group by sirket;\
+\
+\
+}

@@ -1,0 +1,136 @@
+{\rtf1\ansi\ansicpg1254\cocoartf2706
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww29200\viewh18400\viewkind0
+\pard\tx791\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li736\fi39\pardirnatural\partightenfactor0
+
+\f0\fs36 \cf0 /*Child tablo da "on delete cascade" yazilmazsa:\
+1) Child tablo silinmeden parent tablo silinmeye calisildiginda pgadmin hata verir\
+yani child tablo silinmeden parent tablo silinemez\
+\
+2)Child tablodaki veri silinmeden parent tablodaki veri silinmeye calisildiginda pgadmin\
+error verir. Yani child tablodaki veri silinmeden parent tablodaki veri silinemez\
+\
+Child tabloda "on delete cascade" comutu yazilirsa:\
+1) child tablo silinmeden parent tablo silinebilir.pgadmin error vermez.\
+2) Child tablodaki veri silinmeden parent tablodaki veri silinmeye calisildiginda\
+pgadmin hata vermez.Parent tablodaki veriyi siler.Fakat bu durumda child tablodaki veride silinir\
+\
+*/\
+\
+-- ********  UDDATE  *********\
+CREATE TABLE toptancilar     --> parent\
+(\
+vergi_no int PRIMARY KEY,\
+sirket_ismi VARCHAR(40),\
+irtibat_ismi VARCHAR(30)\
+);\
+INSERT INTO toptancilar VALUES (201, 'IBM', 'Kadir \uc0\u350 en');\
+INSERT INTO toptancilar VALUES (202, 'Huawei', '\'c7etin Ho\uc0\u351 ');\
+INSERT INTO toptancilar VALUES (203, 'Erikson', 'Mehmet G\'f6r');\
+INSERT INTO toptancilar VALUES (204, 'Apple', 'Adem Cos');\
+select * from toptancilar;\
+\
+CREATE TABLE malzemeler     --> child\
+(\
+ted_vergino int,\
+malzeme_id int,\
+malzeme_isim VARCHAR(20),\
+musteri_isim VARCHAR(25),\
+CONSTRAINT fk FOREIGN KEY(ted_vergino) REFERENCES toptancilar(vergi_no)\
+on delete cascade\
+);\
+INSERT INTO malzemeler VALUES(201, 1001,'Laptop', 'Asl\uc0\u305  Can');\
+INSERT INTO malzemeler VALUES(202, 1002,'Telefon', 'Fatih Ak');\
+INSERT INTO malzemeler VALUES(202, 1003,'TV', 'Ramiz \'d6zmen');\
+INSERT INTO malzemeler VALUES(202, 1004,'Laptop', 'Veli Tan');\
+INSERT INTO malzemeler VALUES(203, 1005,'Telefon', 'Cemile Al');\
+INSERT INTO malzemeler VALUES(204, 1006,'TV', 'Ali Can');\
+INSERT INTO malzemeler VALUES(204, 1007,'Telefon', 'Ahmet Yaman');\
+\
+SELECT * FROM malzemeler;\
+\
+-- SORU1: vergi_no\'92su 202 olan toptancinin sirket_ismi'ni 'VivoBook' olarak g\'fcncelleyeniz.\
+update toptancilar set sirket_ismi = 'VivoBook'\
+where vergi_no= '202';\
+select * from toptancilar;\
+\
+--  SORU2: toptancilar tablosundaki t\'fcm sirket isimlerini 'NOKIA' olarak g\'fcncelleyeniz.\
+update toptancilar set sirket_ismi = 'NOKIA';\
+select * from toptancilar;\
+\
+-- SORU3: vergi_no\'92su 201 olan toptancinin\
+--sirket_ismi'ni 'nokia' ve irtibat_ismi\'92ni 'Canan Can' olarak g\'fcncelleyiniz.\
+UPDATE toptancilar set sirket_ismi='nokia', irtibat_ismi='Canan Can'\
+WHERE vergi_no =201;\
+select * from toptancilar;\
+\
+-- SORU4: sirket_ismi nokia olan toptancinin\
+--irtibat_ismi'ni 'Bilal Han' olarak g\'fcncelleyiniz.\
+\
+update toptancilar set irtibat_ismi ='Bilal Han'\
+where sirket_ismi='nokia';\
+select * from toptancilar;\
+\
+-- SORU5: malzemeler tablosundaki 'Telefon' de\uc0\u287 erlerini 'Phone' olarak g\'fcncelleyiniz.\
+update malzemeler set malzeme_isim='Phone'\
+where malzeme_isim='Telefon';\
+select * from malzemeler;\
+\
+- SORU6: malzemeler tablosundaki malzeme_id de\uc0\u287 eri 1004'ten b\'fcy\'fck olanlar\u305 n\
+ --malzeme_id'lerini 1 art\uc0\u305 rarak g\'fcncelleyiniz.\
+\
+update malzemeler set malzeme_id=malzeme_id+1\
+where malzeme_id>1004;\
+\
+-- SORU7: malzemeler tablosundaki t\'fcm malzemelerin malzeme_id \
+--de\uc0\u287 erini ted_vergino ile toplayarak g\'fcncelleyiniz.\
+\
+update malzemeler set malzeme_id= malzeme_id+ted_vergino;\
+\
+\
+--tablolari sifirlayip 8. soruya gectik\
+-- SORU8: Malzemeler tablosundaki musteri_isim'i Ali Can olan malzeme_isim'ini,\
+--toptanc\uc0\u305 lar  tablosunda irtibat_ismi 'Adem Co\u351 ' olan sirket_ismi ile g\'fcncelleyiniz.\
+\
+--ozetle >> alicanin malzeme ismini guncelle \
+\
+update malzemeler set malzeme_isim=(select sirket_ismi from toptancilar where irtibat_ismi='Adem Cos')\
+where musteri_isim='Ali Can';\
+\
+-- SORU9: malzeme_ismi Laptop olan musteri_isim'ini,\
+ --sirket_ismi Apple\'92in irtibat_isim'i ile g\'fcncelleyiniz.\
+\
+\
+update malzemeler set musteri_isim=(select irtibat_ismi from toptancilar where sirket_ismi='Apple')\
+where malzeme_isim='Laptop';\
+\
+\
+--Soru10\
+create table arac(\
+id int,\
+marka varchar(30),\
+model varchar(30),\
+fiyat int,\
+kilometre int,\
+vites varchar(20)\
+)\
+insert into arac values(100, 'Citroen', 'C3', 500000, 5000, 'Otomatik' );\
+insert into arac values(101, 'Mercedes', 'C180', 900000, 10000, 'Otomatik' );\
+insert into arac values(102, 'Honda', 'C\uc0\u305 v\u305 c', 400000, 15000, 'Manuel' );\
+insert into arac values(103, 'Wolkswagen', 'Golf', 350000, 20000, 'Manuel' );\
+insert into arac values(104, 'Ford', 'Mustang', 750000, 5000, 'Otomatik' );\
+insert into arac values(105, 'Porsche', 'Panamera', 850000, 5000, 'Otomatik' );\
+insert into arac values(106, 'Bugatti', 'Veyron', 950000, 5000, 'Otomatik' );\
+\
+\
+--SORU: arac tablosundaki en y\'fcksek fiyat'\uc0\u305  listele\
+\
+\
+\
+\
+\
+\
+\
+}

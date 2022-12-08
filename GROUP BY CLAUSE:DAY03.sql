@@ -27,6 +27,14 @@ group by isim;
 --personel tablosundaki isimleri gruplayiniz
 select isim from personel group by isim;
 
+--Sirketlere gore maasi 5000 liradan fazla olan personel sayisini bulun
+select sirket, count(*) from personel 
+group by sirket;
 
+--her sirket icin Min ve Max maasi bulun
+select sirket,min(maas) as min_Maas,max(maas) as max_maas from personel
+group by sirket;	
 
-
+--sehre gore toplam personel sayisini bulun	
+SELECT isim,sehir, COUNT(isim) AS toplamkisi_sayisi FROM personel where maas>5000
+GROUP BY isim,sehir;
